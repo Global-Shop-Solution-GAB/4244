@@ -1,0 +1,501 @@
+Program.Sub.ScreenSU.Start
+Gui.frmDrawMaster..Create
+Gui.frmDrawMaster..Caption("Drawing Master")
+Gui.frmDrawMaster..Size(11235,7905)
+Gui.frmDrawMaster..MinX(0)
+Gui.frmDrawMaster..MinY(0)
+Gui.frmDrawMaster..Position(0,0)
+Gui.frmDrawMaster..BackColor(-2147483633)
+Gui.frmDrawMaster..MaxButton(False)
+Gui.frmDrawMaster..MinButton(False)
+Gui.frmDrawMaster..MousePointer(0)
+Gui.frmDrawMaster..Event(UnLoad,frmDrawMaster_UnLoad)
+Gui.frmDrawMaster.GsGridControl.Create(GsGridControl)
+Gui.frmDrawMaster.GsGridControl.Size(10725,5625)
+Gui.frmDrawMaster.GsGridControl.Position(165,1575)
+Gui.frmDrawMaster.GsGridControl.Event(RowClick,GsGridControl_RowClick)
+Gui.frmDrawMaster.GsGridControl.Event(CellValueChanged,GsGridControl_CellValueChanged)
+Gui.frmDrawMaster.lbl1.Create(Label,"Type",True,1425,255,0,90,360,True,0,"Arial",8,-986896,0)
+Gui.frmDrawMaster.lbl2.Create(Label,"Drawing",True,1140,255,0,1155,360,True,0,"Arial",8,-986896,0)
+Gui.frmDrawMaster.txtDrawing.Create(TextBox,"",True,1440,300,0,1170,615,True,0,"Arial",8,-2147483643,1)
+Gui.frmDrawMaster.cmdAdd.Create(Button)
+Gui.frmDrawMaster.cmdAdd.Size(855,375)
+Gui.frmDrawMaster.cmdAdd.Position(10050,1110)
+Gui.frmDrawMaster.cmdAdd.Caption("Add")
+Gui.frmDrawMaster.cmdAdd.Event(Click,cmdAdd_Click)
+Gui.frmDrawMaster.lbl3.Create(Label,"REV",True,585,255,0,2790,360,True,0,"Arial",8,-986896,0)
+Gui.frmDrawMaster.txtRev.Create(TextBox,"",True,615,300,0,2805,615,True,0,"Arial",8,-2147483643,1)
+Gui.frmDrawMaster.txtRev.MaxLength(2)
+Gui.frmDrawMaster.lbl4.Create(Label,"Status",True,1005,255,0,3600,360,True,0,"Arial",8,-986896,0)
+Gui.frmDrawMaster.ddlStatus.Create(DropDownList)
+Gui.frmDrawMaster.ddlStatus.Size(1095,330)
+Gui.frmDrawMaster.ddlStatus.Position(3615,615)
+Gui.frmDrawMaster.lbl5.Create(Label,"Notes",True,780,255,0,4890,360,True,0,"Arial",8,-986896,0)
+Gui.frmDrawMaster.txtNotes.Create(TextBox,"",True,6030,300,0,4875,615,True,0,"Arial",8,-2147483643,1)
+Gui.frmDrawMaster.txtNotes.MaxLength(50)
+Gui.frmDrawMaster.ddlType.Create(DropDownList)
+Gui.frmDrawMaster.ddlType.Size(825,330)
+Gui.frmDrawMaster.ddlType.Position(150,615)
+Gui.frmDrawMaster.ddlType.Event(Click,ddlType_Click)
+Gui.frmMode..Create
+Gui.frmMode..Caption("Screen Mode")
+Gui.frmMode..Size(3015,2070)
+Gui.frmMode..MinX(0)
+Gui.frmMode..MinY(0)
+Gui.frmMode..Position(0,0)
+Gui.frmMode..BackColor(-2147483633)
+Gui.frmMode..MaxButton(False)
+Gui.frmMode..MinButton(False)
+Gui.frmMode..MousePointer(0)
+Gui.frmMode..Event(UnLoad,frmMode_UnLoad)
+Gui.frmMode.cmdNew.Create(Button)
+Gui.frmMode.cmdNew.Size(1020,375)
+Gui.frmMode.cmdNew.Position(285,525)
+Gui.frmMode.cmdNew.Caption("New")
+Gui.frmMode.cmdNew.Event(Click,cmdNew_Click)
+Gui.frmMode.cmdOpen.Create(Button)
+Gui.frmMode.cmdOpen.Size(1020,375)
+Gui.frmMode.cmdOpen.Position(1470,525)
+Gui.frmMode.cmdOpen.Caption("Open")
+Gui.frmMode.cmdOpen.Event(Click,cmdOpen_Click)
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+'True - open, False - New
+v.Global.bMode.Declare(Boolean)
+'Current Rowno
+v.Global.iRow.Declare(long)
+'Grid Value Change
+v.Global.bRowChange.Declare(Boolean)
+
+
+
+F.ODBC.Connection!con.OpenConnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass)
+''Load Drop Down List
+'F.Intrinsic.Control.CallSub(Load_Type)
+'Create DataTable
+'F.Intrinsic.Control.CallSub(Load_Grid)
+'Format GridView
+
+gui.frmMode..Show 
+'F.Intrinsic.Control.CallSub(Format_GridView)
+
+
+gui.frmDrawMaster.ddlType.AddItem("")
+gui.frmDrawMaster.ddlType.AddItem("1")
+gui.frmDrawMaster.ddlType.AddItem("3")
+gui.frmDrawMaster.ddlType.AddItem("5")
+gui.frmDrawMaster.ddlType.AddItem("7")
+gui.frmDrawMaster.ddlType.AddItem("8")
+gui.frmDrawMaster.ddlType.AddItem("9")
+gui.frmDrawMaster.ddlType.AddItem("P")
+gui.frmDrawMaster.ddlType.AddItem("Q")
+
+'Production
+'Engineering 
+'Obsolete 
+gui.frmDrawMaster.ddlStatus.AddItem("")
+gui.frmDrawMaster.ddlStatus.AddItem("P")
+gui.frmDrawMaster.ddlStatus.AddItem("E")
+gui.frmDrawMaster.ddlStatus.AddItem("O")
+
+gui.frmDrawMaster.txtDrawing.Locked(True)
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_.4244_DrawMaster.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Main.End
+
+Program.Sub.cboType_Change.Start
+Program.Sub.cboType_Change.End
+
+Program.Sub.cmdAdd_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdAdd_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+V.Local.sValues.Declare(String)
+
+F.Intrinsic.Control.If(V.Screen.frmDrawMaster!ddlType.Text,=,"")
+	F.Intrinsic.UI.Msgbox("Invaild Drawing Type")
+F.Intrinsic.Control.ElseIf(V.Screen.frmDrawMaster!txtDrawing.Text,=,"")
+	F.Intrinsic.UI.Msgbox("Invalid Drawing")
+F.Intrinsic.Control.ElseIf(V.Screen.frmDrawMaster!txtRev.Text,=,"")
+	F.Intrinsic.UI.Msgbox("Invalid Rev")
+F.Intrinsic.Control.ElseIf(V.Screen.frmDrawMaster!ddlStatus.Text,=,"")
+	F.Intrinsic.UI.Msgbox("Invalid Status")
+F.Intrinsic.Control.Else
+
+	f.Intrinsic.Control.If(v.Screen.frmDrawMaster!cmdAdd.Caption,=,"Add")
+		'Build list of values to be added to the grid
+	  	F.Intrinsic.String.Build("{0}*!*{1}*!*{2}*!*{3}*!*{4}*!*{5}",V.Screen.frmDrawMaster!ddlType.Text,V.Screen.frmDrawMaster!txtDrawing.Text,V.Screen.frmDrawMaster!txtRev.Text,V.Screen.frmDrawMaster!ddlStatus.Text,V.Screen.frmDrawMaster!txtNotes.Text,v.Caller.User,V.Local.sValues)
+	'	Gui.frmDrawMaster.GsGridControl.AddRow("Grid_Draw",V.Local.sValues)
+		
+'		F.Data.DataTable.AddRowByMap("Drawing","Drawing_Type*!*Drawing_Number*!*Drawing_Rev*!*Drawing_Status*!*Drawing_Notes*!*UserId", V.Local.sValues) 
+		
+'		F.Data.DataTable.AddRow("Instructors", "Name", "Ryan Young", "Title", "Manager, Custom Programming", "Class_Date","04/04/2016")
+
+		F.Data.DataTable.AddRow("Drawing", "Drawing_Type", V.Screen.frmDrawMaster!ddlType.Text, "Drawing_Number",  V.Screen.frmDrawMaster!txtDrawing.Text,"Drawing_Rev",V.Screen.frmDrawMaster!txtRev.Text,"Drawing_Status",V.Screen.frmDrawMaster!ddlStatus.Text,"Drawing_Notes",V.Screen.frmDrawMaster!txtNotes.Text,"UserId",v.Caller.User)	
+'		F.Data.DataTable.AddRowByMap(v.Args.sTable, "UserID*!*UserName*!*GroupFlag*!*GroupType*!*Dist_Email", v.Local.sValues(0), v.Local.sValues(1), v.Local.sValues(2),v.Local.sValues(3), v.Local.sEmail.Trim)
+	
+	F.Intrinsic.Control.ElseIf(v.Screen.frmDrawMaster!cmdAdd.Caption,=,"Modify")
+		F.Data.DataTable.SetValue("Drawing",v.Global.iRow, "Drawing_Rev",V.Screen.frmDrawMaster!txtRev.Text,"Drawing_Status",V.Screen.frmDrawMaster!ddlStatus.Text,"Drawing_Notes",V.Screen.frmDrawMaster!txtNotes.Text,"UserID",v.Caller.User)
+'		
+'		Gui.Form.GsGridControlName.SetCellValue(GridviewName [string], ColumnIndex [long], RowIndex [long], Cell value)
+'		Gui.frmDrawMaster.GsGridControl.SetCellValue("Grid_Draw",2,v.Global.iRow,V.Screen.frmDrawMaster!txtRev.Text)
+	F.Intrinsic.Control.EndIf
+	v.Global.bRowChange.Set(True)
+	gui.frmDrawMaster.ddlType.Text("")
+	gui.frmDrawMaster.txtDrawing.Text("")
+	gui.frmDrawMaster.txtRev.Text("")
+	gui.frmDrawMaster.ddlStatus.Text("")
+	gui.frmDrawMaster.txtNotes.Text("")
+	gui.frmDrawMaster.cmdAdd.Caption("Add")
+F.Intrinsic.Control.EndIf
+
+'F.Data.DataTable.SetValue("Orders",v.Global.iRow, "ID",v.Local.iID,
+'F.Data.DataTable.AddRowByMap(v.Args.sTable, "UserID*!*UserName*!*GroupFlag*!*GroupType*!*Dist_Email", v.Local.sValues(0), v.Local.sValues(1), v.Local.sValues(2),v.Local.sValues(3), v.Local.sEmail.Trim)
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdAdd_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_.4244_DrawMaster.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmdAdd_Click.End
+
+Program.Sub.cmdNew_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdNew_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+	gui.frmMode..Visible(false)
+	
+'	gui.frmDrawMaster.txtType.Locked(False)
+'	gui.frmDrawMaster.txtDrawing.Locked(False)
+	gui.frmDrawMaster..Caption("Screen Mode - New")
+	gui.frmDrawMaster..Show 
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdNew_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_.4244_DrawMaster.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmdNew_Click.End
+
+Program.Sub.cmdOpen_Click.Start
+	'open
+	v.Global.bMode.set(True)
+	gui.frmMode..Visible(false)
+	
+'	gui.frmDrawMaster.txtType.Locked(True)
+'	gui.frmDrawMaster.txtDrawing.Locked(True)
+	gui.frmDrawMaster..Caption("Screen Mode - Open")
+	gui.frmDrawMaster..Show 
+Program.Sub.cmdOpen_Click.End
+
+Program.Sub.frmDrawMaster_UnLoad.Start
+F.Intrinsic.Control.SetErrorHandler("frmDrawMaster_UnLoad_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+
+F.Intrinsic.Control.If(v.DataTable.Drawing.Exists,=,True)
+	F.Intrinsic.Control.If(v.Global.bRowChange,=,True)
+		F.Data.DataTable.SaveToDB("Drawing","con","GCG_4244_DrawMaster","Drawing_Type*!*Drawing_Number",7)
+	f.Intrinsic.Control.EndIf 
+	F.Data.DataTable.Close("Drawing")
+f.Intrinsic.Control.EndIf 
+
+
+F.ODBC.Connection!con.Close
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("frmDrawMaster_UnLoad_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_.4244_DrawMaster.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.frmDrawMaster_UnLoad.End
+
+Program.Sub.Load_Type.Start
+Program.Sub.Load_Type.End
+
+Program.Sub.Load_Grid.Start
+F.Intrinsic.Control.SetErrorHandler("Load_Grid_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+'F.Data.DataTable.CreateFromSQL("Drawing","con","SELECT * FROM GCG_4244_DrawMaster",True)
+'F.Data.DataView.Create("Drawing","Draw_View",22,"","Drawing_Type ASC")
+'Gui.frmDrawMaster.GsGridControl.AddGridViewFromDataView("Grid_Draw","Drawing","Draw_View")
+'Gui.frmDrawMaster.GsGridControl.mainview("Grid_Draw")
+'
+'F.Data.DataView.close("Drawing_View")
+
+'-------------------------
+'V.Local.sFilter.Declare(String)
+'V.Local.sSort.Declare(String)
+''V.Local.sFilter.Set("Drawing_Type > 0.00")
+'f.Intrinsic.String.Build(V.Local.sFilter,"Drawing_Type='{0}'",V.Local.sFilter)
+''V.Local.sSort.Set("Name_Customer ASC")
+'
+''F.Data.DataView.Create("Customer","Customer_Sales",22,v.Local.sFilter,v.Local.sSort)
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Load_Grid_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_.4244_DrawMaster.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Load_Grid.End
+
+Program.Sub.Format_GridView.Start
+F.Intrinsic.Control.SetErrorHandler("Format_GridView_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+
+'F.Intrinsic.Debug.InvokeDebugger
+'
+'
+'F.Intrinsic.Debug.Stop
+'
+
+Gui.frmDrawMaster.GsGridControl.SetColumnProperty("Grid_Draw","Drawing_Type","Caption","Type")
+Gui.frmDrawMaster.GsGridControl.SetColumnProperty("Grid_Draw","Drawing_Number","Caption","Drawing")
+Gui.frmDrawMaster.GsGridControl.SetColumnProperty("Grid_Draw","Drawing_Rev","Caption","Rev")
+Gui.frmDrawMaster.GsGridControl.SetColumnProperty("Grid_Draw","Drawing_Status","Caption","Status")
+Gui.frmDrawMaster.GsGridControl.SetColumnProperty("Grid_Draw","Drawing_Notes","Caption","Notes")
+Gui.frmDrawMaster.GsGridControl.SetColumnProperty("Grid_Draw","UserId","Caption","UserID")
+
+Gui.frmDrawMaster.GsGridControl.SetColumnProperty("Grid_Draw", "UserID", "Visible", False)
+
+'Gui.frmDrawMaster.GsGridControl.SetColumnProperty("Grid_Draw", "Drawing_Type", "MinWidth",10)
+Gui.frmDrawMaster.GsGridControl.SetColumnProperty("Grid_Draw", "Drawing_Type", "MaxWidth",40)
+Gui.frmDrawMaster.GsGridControl.SetColumnProperty("Grid_Draw", "Drawing_Number", "MaxWidth",70)
+Gui.frmDrawMaster.GsGridControl.SetColumnProperty("Grid_Draw", "Drawing_Rev", "MaxWidth",40)
+Gui.frmDrawMaster.GsGridControl.SetColumnProperty("Grid_Draw", "Drawing_Status", "MaxWidth",40)
+Gui.frmDrawMaster.GsGridControl.SetColumnProperty("Grid_Draw", "Drawing_Notes", "MaxWidth", 500)
+
+Gui.frmDrawMaster.GsGridControl.SetGridViewProperty("Grid_Draw", "Editable", False)
+Gui.frmDrawMaster.GsGridControl.SetColumnProperty("Grid_Draw", "Drawing_Notes", "CellWordWrap", "Wrap")
+'Gui.frmDrawMaster.GsGridControl.SetColumnProperty("Grid_Draw", "Drawing_Notes", "OptionsViewRowAutoHeight", True)
+
+'Set Column Widths
+'Gui.F_Maint.GsGridControl1.SetColumnProperty("Grid_Draw","Type","WIDTH",50)
+'Gui.F_Maint.GsGridControl1.SetColumnProperty("Grid_Draw","Type","FixedWidth",True)
+'Gui.F_Maint.GsGridControl1.SetColumnProperty("Grid_Draw","Drawing","WIDTH",125)
+'Gui.F_Maint.GsGridControl1.SetColumnProperty("Grid_Draw","Drawing","FixedWidth",True)
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Format_GridView_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_.4244_DrawMaster.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Format_GridView.End
+
+Program.Sub.cmdType_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdNew_Click_Err")
+'F.Intrinsic.Control.ClearErrors
+'
+'V.Local.sError.Declare(String)
+'
+'
+'V.Local.sRet.Declare(String)
+'V.Local.sTitles.Declare(String)
+'V.Local.iWidths.Declare(Long)
+'V.Local.sSql.Declare(String)
+'
+''Open
+'f.Intrinsic.Control.If(v.Global.bMode,=,True)
+'	F.Intrinsic.String.Split("Type*!*Drawing Number*!*Drawing_Rev*!*Drawing_Status","*!*",V.Local.sTitles)
+'	F.Intrinsic.String.Split("800*!*800*!*800*!*800","*!*",V.Local.iWidths)
+'	
+'	F.Intrinsic.UI.Browser("select Drawing_Type,Drawing_Number,Drawing_Rev,Drawing_Status from GCG_4244_DrawMaster ORDER BY Drawing_Type, Drawing_Number",V.Local.sTitles,V.Local.iWidths,V.Local.sRet)
+'f.Intrinsic.Control.Else
+'	F.Intrinsic.String.Split("Type*!*","*!*",V.Local.sTitles)
+'	F.Intrinsic.String.Split("800*!*","*!*",V.Local.iWidths)
+'	
+'	F.Intrinsic.UI.Browser("select Drawing_Type from GCG_4244_DrawMaster ORDER BY Drawing_Type",V.Local.sTitles,V.Local.iWidths,V.Local.sRet)
+'f.Intrinsic.Control.EndIf 
+'F.Intrinsic.Control.If(V.Local.sRet,"=","***CANCEL***")
+'	F.Intrinsic.UI.Msgbox("No Drawing was selected")
+'F.Intrinsic.Control.Else
+'	F.Intrinsic.String.Split(V.Local.sRet,"*!*",V.Local.sRet)
+'	gui.frmDrawMaster.txtType.Text(V.Local.sRet(0).Trim)
+'	gui.frmDrawMaster.txtDrawing.Text(V.Local.sRet(1).Trim)
+'	f.Intrinsic.Control.CallSub(txttype_lostfocus)
+'F.Intrinsic.Control.EndIf
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdNew_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_.4244_DrawMaster.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmdType_Click.End
+
+Program.Sub.GsGridControl_RowClick.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+
+
+'Open
+f.Intrinsic.Control.If(v.Global.bMode,=,True)
+	v.Global.iRow.Set(v.Args.ROWINDEX)
+	gui.frmDrawMaster.ddltype.Text(v.DataTable.Drawing(v.Global.iRow).Drawing_Type!FieldVal)
+	gui.frmDrawMaster.txtDrawing.Text(v.DataTable.Drawing(v.Global.iRow).Drawing_Number!FieldVal)
+	gui.frmDrawMaster.txtRev.Text(v.DataTable.Drawing(v.Global.iRow).Drawing_Rev!FieldVal)
+	gui.frmDrawMaster.ddlStatus.Text(v.DataTable.Drawing(v.Global.iRow).Drawing_Status!FieldVal)
+	gui.frmDrawMaster.txtNotes.Text(v.DataTable.Drawing(v.Global.iRow).Drawing_Notes!FieldVal)
+	gui.frmDrawMaster.cmdAdd.Caption("Modify")
+'	v.Global.bRowChange.Set(True)
+f.Intrinsic.Control.EndIf 
+
+'F.Data.DataTable.SetValue("Orders",v.Global.iRow, "ID",v.Local.iID,
+'F.Data.DataTable.AddRowByMap(v.Args.sTable, "UserID*!*UserName*!*GroupFlag*!*GroupType*!*Dist_Email", v.Local.sValues(0), v.Local.sValues(1), v.Local.sValues(2),v.Local.sValues(3), v.Local.sEmail.Trim)
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_.4244_DrawMaster.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.GsGridControl_RowClick.End
+
+Program.Sub.ddlType_Click.Start
+F.Intrinsic.Control.SetErrorHandler("ddlType_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+V.Local.sFilter.Declare(String)
+V.Local.sSort.Declare(String)
+v.Local.sRet.Declare(String)
+v.Local.iNextNo.Declare(long)
+v.Local.sNextNo.Declare(string)
+V.Local.sSQL.Declare(String)
+
+
+
+f.Intrinsic.Control.If(v.Screen.frmDrawMaster!ddlType.Text,<>,"")
+
+	F.Intrinsic.Control.If(v.DataTable.Drawing.Exists,=,True)
+		F.Intrinsic.Control.If(v.Global.bRowChange,=,True)
+			F.Data.DataTable.SaveToDB("Drawing","con","GCG_4244_DrawMaster","Drawing_Type*!*Drawing_Number",7)
+			v.Global.bRowChange.Set(False)
+		f.Intrinsic.Control.EndIf 
+		F.Data.DataTable.Close("Drawing")
+	f.Intrinsic.Control.EndIf 
+
+	f.Intrinsic.String.Build("SELECT Drawing_Type,Drawing_Number,Drawing_Rev,Drawing_Status,Drawing_Notes,UserId FROM GCG_4244_DrawMaster where Drawing_Type='{0}' ",v.Screen.frmDrawMaster!ddlType.Text,v.Local.sSQL)
+	F.Data.DataTable.CreateFromSQL("Drawing","con",v.Local.sSQL,True)
+	Gui.frmDrawMaster.GsGridControl.AddGridViewFromDataTable("Grid_Draw","Drawing")
+	Gui.frmDrawMaster.GsGridControl.mainview("Grid_Draw")
+	
+	'Grid Formatting
+	f.Intrinsic.Control.CallSub(format_gridview)
+	'Open
+	f.Intrinsic.Control.If(v.Global.bMode,=,True)
+	f.Intrinsic.Control.Else
+		
+'F.Intrinsic.Debug.InvokeDebugger
+'
+'F.Intrinsic.Debug.Stop
+
+'		'Function.Data.DataTable.Compute("Orders", "Sum(unitprice * qty)","Order = '123456'",v.lo.fRet)
+		Function.Data.DataTable.Compute("Drawing", "Max(Drawing_Number)","",v.Local.iNextNo)
+		f.Intrinsic.Control.if(v.Local.iNextNo,<>,0)
+			F.Intrinsic.Math.Add(v.Local.iNextNo, 1, V.Local.iNextNo)
+			f.Intrinsic.String.LPad(v.Local.iNextNo,"0",5,v.Local.sNextNo)
+			gui.frmDrawMaster.txtDrawing.Text(v.Local.sNextNo)
+'			gui.frmDrawMaster.txtDrawing.Text("00001")
+		f.Intrinsic.Control.Else
+			f.Intrinsic.String.Build("select Drawing_Number from  GCG_4244_DrawNumber where Drawing_Type = '{0}'",v.Screen.frmDrawMaster!ddlType.Text,V.Local.sSQL)
+			F.ODBC.Connection!con.OpenRecordsetRO("rstB",V.local.ssql)
+			f.Intrinsic.Control.if(V.ODBC.con!rstB.EOF,=,False)
+				f.Intrinsic.String.LPad(v.ODBC.con!rstB.FieldVal!Drawing_Number,"0",5,v.Local.sNextNo)
+				gui.frmDrawMaster.txtDrawing.Text(v.Local.sNextNo)
+			f.Intrinsic.Control.else
+				f.Intrinsic.UI.Msgbox("Draw Number not assigned for this DrawType")
+				gui.frmDrawMaster.txtDrawing.Text("")
+			f.Intrinsic.Control.EndIf 
+			f.ODBC.con!rstB.Close
+		f.Intrinsic.Control.EndIf 
+	f.Intrinsic.Control.EndIf 
+	
+f.Intrinsic.Control.EndIf 
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("ddlType_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_.4244_DrawMaster.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.ddlType_Click.End
+
+Program.Sub.GsGridControl_CellValueChanged.Start
+	v.Global.bRowChange.Set(True)
+Program.Sub.GsGridControl_CellValueChanged.End
+
+Program.Sub.frmMode_UnLoad.Start
+	F.Intrinsic.Control.End
+
+Program.Sub.frmMode_UnLoad.End
+
+Program.Sub.Comments.Start
+${$0$}$Drawing revision master$}$RAN$}$10/14/2016 1:41:44 PM$}$False
+${$3$}$0$}$$}$0$}$-1$}$$}$12:00:00 AM$}$Modification of ARC Project 1507 original program GCG_6963-2_Multi_MRP.gas
+This adds in the ability to save the Summary for later use.
+Program.Sub.Comments.End
